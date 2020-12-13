@@ -73,12 +73,17 @@ window.onload = () => {
     document.body.appendChild(pushButton)
     pushButton.addEventListener('click', () => {
       if(pushButton.textContent === '開始'){
-        setTimeout(function(){ 
-          getQuiz()
-        }, 1000)
-        deleteQuiz();
-        appendCount('取得中');
-        appendProblem('少々お待ちください');
+        const quizPromise=new Promise(function(resolve){
+          setTimeout(function(){
+            getQuiz()
+          }, 1000)
+          resolve();
+        })
+        quizPromise.then(function(){
+          deleteQuiz();
+          appendCount('取得中');
+          appendProblem('少々お待ちください');
+        })
       }else if(pushButton.textContent === 'ホームに戻る'){
         reflectTop()
       }
@@ -103,3 +108,4 @@ window.onload = () => {
   
   reflectTop()
 }
+
