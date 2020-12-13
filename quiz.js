@@ -1,58 +1,105 @@
 window.onload = () => {
   const answerCorrect = []
+  function reflectTop(){
+    deleteQuiz();
+    appendCount('ようこそ');
+    appendProblem('以下のボタンをクリックして下さい');
+    createButton('開始');
+  }
+
   function createQuiz(quiz, i){
-    const question1 = document.getElementById('question');
-    const probrem1 = document.getElementById('problem');
-    // const questionNumber = document.createElement('h1');
-    // questionNumber.textContent = `問題${i+1}`
-    // document.body.appendChild(questionNumber)
-    while (question1.firstChild){
-      question1.removeChild(question1.firstChild);
-    }
-    while (probrem1.firstChild){
-      probrem1.removeChild(probrem1.firstChild);
-    }
     if(i < 10){
       const problems = []
-      const h1 = document.createElement('h1');
-      h1.textContent = quiz[i].question;
-      question1.appendChild(h1);
-
-      problems.push({status:quiz[i].correct_answer})
+      deleteQuiz();
+      appendCount(`問題${i+1}`);
+      appendGenre(`[ジャンル]${quiz[i].category}`);
+      appendGenre(`[難易度]${quiz[i].difficulty}`);
+      appendProblem(quiz[i].question);
+      problems.push({status:quiz[i].correct_answer});
       quiz[i].incorrect_answers.forEach((problem) => {
-        problems.push({status:problem})
-      })
-      console.log(problems.sort())
+        problems.push({status:problem});
+      });
       problems.forEach((probrem) => {
-        const p = document.createElement('button');
-        p.textContent = probrem.status
-        probrem1.appendChild(p)
-        p.addEventListener('click', () => {
+        const questionPlobrem = document.createElement('div');
+        const ancerButton = document.createElement('button');
+        ancerButton.textContent = probrem.status
+        document.body.appendChild(questionPlobrem);
+        questionPlobrem.appendChild(ancerButton);
+        ancerButton.addEventListener('click', () => {
           if(quiz[i].correct_answer === probrem.status){
-            answerCorrect.push(i)
+            answerCorrect.push(i);
           }
-          createQuiz(quiz, i+1)
-        })
-      })
-    }else{
-      const p = document.createElement('div');
-      p.textContent = `正解は${answerCorrect.length}問です！！`
-      probrem1.appendChild(p)
+          createQuiz(quiz, i+1);
+        });
+      });
+    } else {
+      deleteQuiz()
+      appendCount(`正解は${answerCorrect.length}問です！！`)
+      appendProblem('再度チャレンジする時は以下をクリック')
+      createButton('ホームに戻る' )
+      answerCorrect.length = 0;
     }
   }
 
+  function deleteQuiz(){
+    const parent = document.getElementById('body');
+    while(parent.firstChild){
+      parent.removeChild(parent.firstChild);
+    }
+  }
 
-  fetch("https://opentdb.com/api.php?amount=10")
-  .then(response => {
-    return response.json();
-  })
-  .then(data => {
-    const i = 0
-    createQuiz(data.results, i)
-  })
-  .catch(error => {
-    alert("失敗しました");
-  });
+  function appendCount(comment){
+    const questionNumber = document.createElement('h1');
+    questionNumber.textContent = comment
+    document.body.appendChild(questionNumber);
+  }
 
+  function appendProblem(comment){
+    const questionPlobrem = document.createElement('p');
+    questionPlobrem.id = 'question'
+    questionPlobrem.textContent = comment
+    document.body.appendChild(questionPlobrem);
+  }
+
+  function appendGenre(comment){
+    const questionGenre = document.createElement('h3');
+      questionGenre.textContent = comment
+      document.body.appendChild(questionGenre);
+  }
+
+  function createButton(comment){
+    const pushButton = document.createElement('button');
+    pushButton.textContent = comment
+    document.body.appendChild(pushButton)
+    pushButton.addEventListener('click', () => {
+      if(pushButton.textContent === '開始'){
+        setTimeout(function(){ 
+          getQuiz()
+        }, 1000)
+        deleteQuiz();
+        appendCount('取得中');
+        appendProblem('少々お待ちください');
+      }else if(pushButton.textContent === 'ホームに戻る'){
+        reflectTop()
+      }
+    })
+  }
+
+  function getQuiz(){
+    fetch("https://opentdb.com/api.php?amount=10")
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+    })
+    .then(data => {
+      const i = 0
+      createQuiz(data.results, i)
+    })
+    .catch(error => {
+      alert("失敗しました");
+    });
+  }
+  
+  reflectTop()
 }
-
