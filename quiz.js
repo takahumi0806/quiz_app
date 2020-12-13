@@ -15,28 +15,29 @@ window.onload = () => {
       appendGenre(`[ジャンル]${quiz[i].category}`);
       appendGenre(`[難易度]${quiz[i].difficulty}`);
       appendProblem(quiz[i].question);
-      problems.push({status:quiz[i].correct_answer});
+      problems.push(quiz[i].correct_answer);
       quiz[i].incorrect_answers.forEach((problem) => {
-        problems.push({status:problem});
+        problems.push(problem);
       });
+      problems.sort();
       problems.forEach((probrem) => {
         const questionPlobrem = document.createElement('div');
         const ancerButton = document.createElement('button');
-        ancerButton.textContent = probrem.status
+        ancerButton.textContent = probrem
         document.body.appendChild(questionPlobrem);
         questionPlobrem.appendChild(ancerButton);
         ancerButton.addEventListener('click', () => {
-          if(quiz[i].correct_answer === probrem.status){
+          if(quiz[i].correct_answer === probrem){
             answerCorrect.push(i);
           }
           createQuiz(quiz, i+1);
         });
       });
     } else {
-      deleteQuiz()
-      appendCount(`正解は${answerCorrect.length}問です！！`)
-      appendProblem('再度チャレンジする時は以下をクリック')
-      createButton('ホームに戻る' )
+      deleteQuiz();
+      appendCount(`正解は${answerCorrect.length}問です！！`);
+      appendProblem('再度チャレンジする時は以下をクリック');
+      createButton('ホームに戻る' );
       answerCorrect.length = 0;
     }
   }
@@ -70,13 +71,13 @@ window.onload = () => {
   function createButton(comment){
     const pushButton = document.createElement('button');
     pushButton.textContent = comment
-    document.body.appendChild(pushButton)
+    document.body.appendChild(pushButton);
     pushButton.addEventListener('click', () => {
       if(pushButton.textContent === '開始'){
         const quizPromise=new Promise(function(resolve){
           setTimeout(function(){
-            getQuiz()
-          }, 1000)
+            getQuiz();
+          }, 1000);
           resolve();
         })
         quizPromise.then(function(){
@@ -85,7 +86,7 @@ window.onload = () => {
           appendProblem('少々お待ちください');
         })
       }else if(pushButton.textContent === 'ホームに戻る'){
-        reflectTop()
+        reflectTop();
       }
     })
   }
@@ -99,7 +100,7 @@ window.onload = () => {
     })
     .then(data => {
       const i = 0
-      createQuiz(data.results, i)
+      createQuiz(data.results, i);
     })
     .catch(error => {
       alert("失敗しました");
