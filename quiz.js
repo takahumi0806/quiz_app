@@ -72,39 +72,28 @@ window.onload = () => {
     const pushButton = document.createElement('button');
     pushButton.textContent = comment
     document.body.appendChild(pushButton);
-    pushButton.addEventListener('click', () => {
-      if(pushButton.textContent === '開始'){
-        const quizPromise=new Promise(function(resolve){
-          setTimeout(function(){
-            getQuiz();
-          }, 1000);
-          resolve();
-        })
-        quizPromise.then(function(){
-          deleteQuiz();
-          appendCount('取得中');
-          appendProblem('少々お待ちください');
-        })
-      }else if(pushButton.textContent === 'ホームに戻る'){
+    pushButton.addEventListener('click', async () => {
+      if (pushButton.textContent === '開始') {
+        deleteQuiz();
+        appendCount('取得中');
+        appendProblem('少々お待ちください');
+        await getQuiz();
+      } else if (pushButton.textContent === 'ホームに戻る') {
         reflectTop();
       }
     })
   }
 
-  function getQuiz(){
-    fetch("https://opentdb.com/api.php?amount=10")
-    .then(response => {
+  async function getQuiz() {
+    try {
+      const response = await fetch("https://opentdb.com/api.php?amount=10");
       if (response.ok) {
-        return response.json();
+        const data = await response.json();
+        createQuiz(data.results, 0);
       }
-    })
-    .then(data => {
-      const i = 0
-      createQuiz(data.results, i);
-    })
-    .catch(error => {
-      alert("失敗しました");
-    });
+    } catch (e) {
+      alert(`失敗しました ErrorMessage => ${e}`);
+    }
   }
   
   reflectTop()
